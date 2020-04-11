@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/file-exit.png</file>
+        <file>images/file-open.png</file>
+        <file>images/tree-item-folder.png</file>
+        <file>images/tree-item-file-header.png</file>
+        <file>images/tree-item-section-header.png</file>
+        <file>images/tree-item-symbol-table.png</file>
+        <file>images/help-about.png</file>
+        <file>MainImage.png</file>
+        <file>images/tree-item-string-table.png</file>
+        <file>images/file-reload.png</file>
+        <file>images/options-languages.png</file>
+        <file>images/action-clear.png</file>
+    </qresource>
+</RCC>
