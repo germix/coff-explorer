@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget* parent)
 	treeView = new QTreeView();
 	treeView->setModel(model);
 	treeView->setHeaderHidden(true);
+	treeView->setEnabled(false);
 	connect(treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(slotTreeView_doubleClicked(QModelIndex)));
 
 	textView = new QTextEdit();
@@ -176,6 +177,7 @@ void MainWindow::openFile(QString fileName)
 	currentFileName = QString();
 	stringTableModel->setStringTable(nullptr);
 	symbolTableModel->setSymbolTable(nullptr);
+	treeView->setEnabled(false);
 	ui->actionFileReload->setEnabled(false);
 
 	if(model->loadFile(fileName))
@@ -183,6 +185,7 @@ void MainWindow::openFile(QString fileName)
 		currentFileName = fileName;
 		recentFiles->removeFile(currentFileName);
 		lastDirectory = QFileInfo(fileName).absoluteDir().absolutePath();
+		treeView->setEnabled(true);
 		ui->actionFileReload->setEnabled(true);
 
 		for(int i = 0; i < model->root->children[0]->children.size(); i++)
