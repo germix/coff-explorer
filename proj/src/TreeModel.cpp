@@ -52,6 +52,8 @@ QModelIndex TreeModel::parent(const QModelIndex& child) const
 
 int TreeModel::rowCount(const QModelIndex& parent) const
 {
+	if(!root)
+		return 0;
 	if(!parent.isValid())
 		return root->children.count();
 	TreeItem* parentItem = toItem(parent);
