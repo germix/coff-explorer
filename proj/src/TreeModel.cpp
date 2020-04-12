@@ -186,23 +186,26 @@ bool TreeModel::loadFile(const QString& fileName)
 
 	file.seek(fhdr.PointerToSymbolTable + fhdr.NumberOfSymbols*SIZE_OF_COFF_SYMBOL);
 
-	quint32 len;
-	file.read((char*)&len, sizeof(quint32));
-	len -= 4;
-	while(len > 0)
+	if(file.pos() < file.size())
 	{
-		char ch;
-		QString str;
-		do
+		quint32 len;
+		file.read((char*)&len, sizeof(quint32));
+		len -= 4;
+		while(len > 0)
 		{
-			len--;
-			file.read(&ch, 1);
-			if(ch != 0)
-				str += ch;
-		}
-		while(ch != 0 && len > 0);
+			char ch;
+			QString str;
+			do
+			{
+				len--;
+				file.read(&ch, 1);
+				if(ch != 0)
+					str += ch;
+			}
+			while(ch != 0 && len > 0);
 
-		stringTableItem->strings.append(str);
+			stringTableItem->strings.append(str);
+		}
 	}
 
 	endResetModel();
