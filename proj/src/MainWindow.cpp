@@ -179,6 +179,7 @@ void MainWindow::openFile(QString fileName)
 	symbolTableModel->setSymbolTable(nullptr);
 	treeView->setEnabled(false);
 	ui->actionFileReload->setEnabled(false);
+	setCurrentWidget(emptyWidget);
 
 	if(model->loadFile(fileName))
 	{
