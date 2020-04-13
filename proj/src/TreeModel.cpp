@@ -96,8 +96,10 @@ void TreeModel::clear()
 {
 	if(root)
 	{
+		beginResetModel();
 		delete root;
 		root = nullptr;
+		endResetModel();
 	}
 }
 
