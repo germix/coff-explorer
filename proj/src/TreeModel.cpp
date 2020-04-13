@@ -137,6 +137,39 @@ bool TreeModel::loadFile(const QString& fileName)
 	}
 
 	//
+	// Read string table
+	//
+	QByteArray stringTableData;
+	TreeItemStringTable* stringTableItem = new TreeItemStringTable(fileHeaderItem);
+
+	file.seek(fhdr.PointerToSymbolTable + fhdr.NumberOfSymbols*SIZE_OF_COFF_SYMBOL);
+
+	if(file.pos() < file.size())
+	{
+		quint32 len;
+		file.read((char*)&len, sizeof(quint32));
+		len -= 4;
+		stringTableData = file.read(len);
+		const char* ptr = stringTableData.constData();
+
+		while(len > 0)
+		{
+			char chr;
+			QString str;
+			do
+			{
+				len--;
+				chr = *ptr++;
+				if(chr != 0)
+					str += chr;
+			}
+			while(chr != 0 && len > 0);
+
+			stringTableItem->strings.append(str);
+		}
+	}
+
+	//
 	// Read symbol table
 	//
 	TreeItemSymbolTable* symbolTableItem = new TreeItemSymbolTable(fileHeaderItem);
@@ -162,14 +195,7 @@ bool TreeModel::loadFile(const QString& fileName)
 
 		if(item->entry.LongName.Zeroes == 0)
 		{
-			file.seek(fhdr.PointerToSymbolTable + fhdr.NumberOfSymbols*sizeof(COFF_SYMBOL) + item->entry.LongName.Offset-4);
-			quint32 len;
-
-			file.read((char*)&len, sizeof(quint32));
-			if(len > 4)
-			{
-				item->name = QString((char*)file.read(len-4).constData());
-			}
+			item->name = QString((char*)&stringTableData.constData()[item->entry.LongName.Offset-4]);
 		}
 		else
 		{
@@ -178,35 +204,6 @@ bool TreeModel::loadFile(const QString& fileName)
 			strncpy(n, (char*)item->entry.ShortName, 8);
 			n[8] = 0;
 			item->name = n;
-		}
-	}
-
-	//
-	// Read string table
-	//
-	TreeItemStringTable* stringTableItem = new TreeItemStringTable(fileHeaderItem);
-
-	file.seek(fhdr.PointerToSymbolTable + fhdr.NumberOfSymbols*SIZE_OF_COFF_SYMBOL);
-
-	if(file.pos() < file.size())
-	{
-		quint32 len;
-		file.read((char*)&len, sizeof(quint32));
-		len -= 4;
-		while(len > 0)
-		{
-			char ch;
-			QString str;
-			do
-			{
-				len--;
-				file.read(&ch, 1);
-				if(ch != 0)
-					str += ch;
-			}
-			while(ch != 0 && len > 0);
-
-			stringTableItem->strings.append(str);
 		}
 	}
 
