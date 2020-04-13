@@ -114,6 +114,11 @@ bool TreeModel::loadFile(const QString& fileName)
 		return false;
 	file.read((char*)&fhdr, sizeof(fhdr));
 
+	if(fhdr.Machine == IMAGE_FILE_MACHINE_UNKNOWN)
+	{
+		return false;
+	}
+
 	beginResetModel();
 	root = new TreeItemRoot();
 	TreeItemFileHeader* fileHeaderItem = new TreeItemFileHeader(root, fileName, fhdr);
