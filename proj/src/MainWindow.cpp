@@ -21,6 +21,7 @@
 #include "TreeItemSymbolTable.h"
 #include "StringTableModel.h"
 #include "SymbolTableModel.h"
+#include "RelocationsModel.h"
 #include "RecentFilesMenu.h"
 
 #define SETTINGS_APPLICATION "CoffExplorer"
@@ -53,8 +54,29 @@ MainWindow::MainWindow(QWidget* parent)
 	symbolTableView->setRootIsDecorated(false);
 	symbolTableView->setModel(symbolTableModel = new SymbolTableModel());
 
+	//
+	// Empty widget
+	//
 	emptyWidget = new QWidget();
 
+	//
+	// Section widget
+	//
+	sectionWidget = new QTabWidget();
+	{
+		sectionHeaderView = new QTextEdit();
+		sectionHeaderView->setReadOnly(true);
+		sectionHeaderView->setFont(QFont("Courier New", 14));
+
+		sectionRelocationsView = new QTreeView();
+		sectionRelocationsView->setRootIsDecorated(false);
+		sectionRelocationsView->setModel(sectionRelocationsModel = new RelocationsModel());
+
+		sectionWidget->addTab(sectionHeaderView, tr("Header"));
+		sectionWidget->addTab(sectionRelocationsView, tr("Relocations"));
+	}
+
+	// ...
 	splitter = new QSplitter();
 	splitter->addWidget(treeView);
 	splitter->addWidget(emptyWidget);
@@ -297,8 +319,11 @@ void MainWindow::slotTreeView_doubleClicked(const QModelIndex& index)
 		s += QString().sprintf("NumberOfLinenumbers: %d\n", sectionItem->header.NumberOfLinenumbers);
 		s += QString().sprintf("Characteristics: 0x%08X\n", sectionItem->header.Characteristics);
 
-		textView->setText(s);
-		setCurrentWidget(textView);
+		sectionHeaderView->setText(s);
+		sectionRelocationsModel->setRelocation(
+					sectionItem->relocations,
+					((TreeItemFileHeader*)model->root->children[0])->header.Machine);
+		setCurrentWidget(sectionWidget);
 	}
 	else if(symbolTableItem != nullptr)
 	{

@@ -15,6 +15,7 @@ class QTextEdit;
 class TreeModel;
 class SymbolTableModel;
 class StringTableModel;
+class RelocationsModel;
 
 class RecentFilesMenu;
 
@@ -36,6 +37,14 @@ class MainWindow : public QMainWindow
 
 	QTreeView*			stringTableView;
 	StringTableModel*	stringTableModel;
+
+	//
+	// Section widget
+	//
+	QTabWidget*			sectionWidget;
+	QTextEdit*			sectionHeaderView;
+	QTreeView*			sectionRelocationsView;
+	RelocationsModel*	sectionRelocationsModel;
 
 	Languages			languages;
 

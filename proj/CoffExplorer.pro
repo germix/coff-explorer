@@ -53,7 +53,8 @@ SOURCES += \
     src/TreeItemStringTable.cpp \
     src/StringTableModel.cpp \
     src/Languages.cpp \
-    src/RecentFilesMenu.cpp
+    src/RecentFilesMenu.cpp \
+    src/RelocationsModel.cpp
 
 HEADERS += \
         src/MainWindow.h \
@@ -71,7 +72,8 @@ HEADERS += \
     src/TreeItemStringTable.h \
     src/StringTableModel.h \
     src/Languages.h \
-    src/RecentFilesMenu.h
+    src/RecentFilesMenu.h \
+    src/RelocationsModel.h
 
 FORMS += \
         src/MainWindow.ui \

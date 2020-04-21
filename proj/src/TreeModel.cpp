@@ -124,7 +124,7 @@ bool TreeModel::loadFile(const QString& fileName)
 	TreeItemFileHeader* fileHeaderItem = new TreeItemFileHeader(root, fileName, fhdr);
 
 	//
-	// Read symbols
+	// Read sections
 	//
 	TreeItemFolder* sectionFolder = new TreeItemFolder(fileHeaderItem, "Sections");
 	for(int i = 0; i < fhdr.NumberOfSections; i++)
@@ -139,8 +139,23 @@ bool TreeModel::loadFile(const QString& fileName)
 	{
 		TreeItemSection* sec = (TreeItemSection*)sectionFolder->children[i];
 
+		//
+		// Raw data
+		//
 		file.seek(sec->header.PointerToRawData);
 		sec->data = file.read(sec->header.SizeOfRawData);
+
+		//
+		// Relocations
+		//
+		file.seek(sec->header.PointerToRelocations);
+		for(int j = 0; j < sec->header.NumberOfRelocations; j++)
+		{
+			IMAGE_RELOCATION rel;
+
+			file.read((char*)&rel, sizeof(rel));
+			sec->relocations.append(rel);
+		}
 	}
 
 	//

@@ -5,9 +5,10 @@
 class TreeItemSection : public TreeItem
 {
 public:
-	QString				name;
-	COFF_SECTION_HEADER	header;
-	QByteArray			data;
+	QString						name;
+	COFF_SECTION_HEADER			header;
+	QByteArray					data;
+	QVector<IMAGE_RELOCATION>	relocations;
 public:
 	TreeItemSection(TreeItem* parent, const COFF_SECTION_HEADER& hdr);
 	~TreeItemSection();
