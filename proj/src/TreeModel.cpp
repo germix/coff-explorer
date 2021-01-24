@@ -101,13 +101,14 @@ void TreeModel::clear()
 		root = nullptr;
 		endResetModel();
 	}
+	file.close();
 }
 
 bool TreeModel::loadFile(const QString& fileName)
 {
 	clear();
 
-	QFile file(fileName);
+	file.setFileName(fileName);
 	COFF_FILE_HEADER fhdr;
 
 	if(!file.open(QFile::ReadOnly))

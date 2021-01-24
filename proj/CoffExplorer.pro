@@ -54,7 +54,8 @@ SOURCES += \
     src/StringTableModel.cpp \
     src/Languages.cpp \
     src/RecentFilesMenu.cpp \
-    src/RelocationsModel.cpp
+    src/RelocationsModel.cpp \
+    src/HexView.cpp
 
 HEADERS += \
         src/MainWindow.h \
@@ -73,7 +74,8 @@ HEADERS += \
     src/StringTableModel.h \
     src/Languages.h \
     src/RecentFilesMenu.h \
-    src/RelocationsModel.h
+    src/RelocationsModel.h \
+    src/HexView.h
 
 FORMS += \
         src/MainWindow.ui \

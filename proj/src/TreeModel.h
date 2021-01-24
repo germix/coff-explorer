@@ -1,14 +1,17 @@
 #ifndef TREEMODEL_H
 #define TREEMODEL_H
 #include <QAbstractItemModel>
+#include <QFile>
 
 class TreeItem;
+class QFile;
 
 class TreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
 public:
 	TreeItem* root;
+	QFile file;
 public:
 	explicit TreeModel(QObject* parent = nullptr);
 	~TreeModel();

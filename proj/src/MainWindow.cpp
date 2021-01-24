@@ -23,6 +23,7 @@
 #include "SymbolTableModel.h"
 #include "RelocationsModel.h"
 #include "RecentFilesMenu.h"
+#include "HexView.h"
 
 #define SETTINGS_APPLICATION "CoffExplorer"
 #define SETTINGS_ORGANIZATION "Germix"
@@ -64,16 +65,27 @@ MainWindow::MainWindow(QWidget* parent)
 	//
 	sectionWidget = new QTabWidget();
 	{
+		//
+		// Header viewer
+		//
 		sectionHeaderView = new QTextEdit();
 		sectionHeaderView->setReadOnly(true);
 		sectionHeaderView->setFont(QFont("Courier New", 14));
+		sectionWidget->addTab(sectionHeaderView, tr("Header"));
 
+		//
+		// Relocation viewer
+		//
 		sectionRelocationsView = new QTreeView();
 		sectionRelocationsView->setRootIsDecorated(false);
 		sectionRelocationsView->setModel(sectionRelocationsModel = new RelocationsModel());
-
-		sectionWidget->addTab(sectionHeaderView, tr("Header"));
 		sectionWidget->addTab(sectionRelocationsView, tr("Relocations"));
+
+		//
+		// Hex viewer
+		//
+		sectionHexView = new HexView();
+		sectionWidget->addTab(sectionHexView, tr("HexView"));
 	}
 
 	// ...
@@ -323,6 +335,11 @@ void MainWindow::slotTreeView_doubleClicked(const QModelIndex& index)
 		sectionRelocationsModel->setRelocation(
 					sectionItem->relocations,
 					((TreeItemFileHeader*)model->root->children[0])->header.Machine);
+
+		sectionHexView->setData(&model->file,
+								sectionItem->header.PointerToRawData,
+								sectionItem->header.SizeOfRawData);
+
 		setCurrentWidget(sectionWidget);
 	}
 	else if(symbolTableItem != nullptr)

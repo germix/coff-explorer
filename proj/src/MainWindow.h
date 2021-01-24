@@ -19,6 +19,8 @@ class RelocationsModel;
 
 class RecentFilesMenu;
 
+class HexView;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -45,6 +47,7 @@ class MainWindow : public QMainWindow
 	QTextEdit*			sectionHeaderView;
 	QTreeView*			sectionRelocationsView;
 	RelocationsModel*	sectionRelocationsModel;
+	HexView*			sectionHexView;
 
 	Languages			languages;
 
