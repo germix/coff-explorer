@@ -9,6 +9,7 @@
 #include <QTextEdit>
 #include <QListWidget>
 #include <QSettings>
+#include <QHeaderView>
 
 #include "AboutDialog.h"
 #include "TreeItem.h"
