@@ -127,7 +127,7 @@ bool TreeModel::loadFile(const QString& fileName)
 	//
 	// Read sections
 	//
-	TreeItemFolder* sectionFolder = new TreeItemFolder(fileHeaderItem, "Sections");
+	sectionFolder = new TreeItemFolder(fileHeaderItem, "Sections");
 	for(int i = 0; i < fhdr.NumberOfSections; i++)
 	{
 		COFF_SECTION_HEADER shdr;

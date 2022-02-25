@@ -25,6 +25,7 @@
 #include "RelocationsModel.h"
 #include "RecentFilesMenu.h"
 #include "HexView.h"
+#include "SymbolTableItem.h"
 
 #define SETTINGS_APPLICATION "CoffExplorer"
 #define SETTINGS_ORGANIZATION "Germix"
@@ -55,6 +56,8 @@ MainWindow::MainWindow(QWidget* parent)
 	symbolTableView = new QTreeView();
 	symbolTableView->setRootIsDecorated(false);
 	symbolTableView->setModel(symbolTableModel = new SymbolTableModel());
+	symbolTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(symbolTableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotSymbolTableView_customContextMenuRequested(QPoint)));
 
 	//
 	// Empty widget
@@ -259,6 +262,33 @@ void MainWindow::initRecentFilesMenu(const QByteArray& state)
 	recentFiles->restoreState(state);
 }
 
+void MainWindow::selectSectionItem(TreeItemSection* sectionItem)
+{
+	QString s;
+
+	s += QString().sprintf("Name: %ls\n", (const wchar_t*)sectionItem->name.constData());
+	s += QString().sprintf("VirtualSize: 0x%08X\n", sectionItem->header.VirtualSize);
+	s += QString().sprintf("VirtualAddress: 0x%08X\n", sectionItem->header.VirtualAddress);
+	s += QString().sprintf("SizeOfRawData: %d\n", sectionItem->header.SizeOfRawData);
+	s += QString().sprintf("PointerToRawData: %d\n", sectionItem->header.PointerToRawData);
+	s += QString().sprintf("PointerToRelocations: %d\n", sectionItem->header.PointerToRelocations);
+	s += QString().sprintf("PointerToLinenumbers: %d\n", sectionItem->header.PointerToLinenumbers);
+	s += QString().sprintf("NumberOfRelocations: %d\n", sectionItem->header.NumberOfRelocations);
+	s += QString().sprintf("NumberOfLinenumbers: %d\n", sectionItem->header.NumberOfLinenumbers);
+	s += QString().sprintf("Characteristics: 0x%08X\n", sectionItem->header.Characteristics);
+
+	sectionHeaderView->setText(s);
+	sectionRelocationsModel->setRelocation(
+				sectionItem->relocations,
+				((TreeItemFileHeader*)model->root->children[0])->header.Machine);
+
+	sectionHexView->setData(&model->file,
+							sectionItem->header.PointerToRawData,
+							sectionItem->header.SizeOfRawData);
+
+	setCurrentWidget(sectionWidget);
+}
+
 void MainWindow::slotAction()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
@@ -320,29 +350,7 @@ void MainWindow::slotTreeView_doubleClicked(const QModelIndex& index)
 	}
 	else if(sectionItem != nullptr)
 	{
-		QString s;
-
-		s += QString().sprintf("Name: %ls\n", (const wchar_t*)sectionItem->name.constData());
-		s += QString().sprintf("VirtualSize: 0x%08X\n", sectionItem->header.VirtualSize);
-		s += QString().sprintf("VirtualAddress: 0x%08X\n", sectionItem->header.VirtualAddress);
-		s += QString().sprintf("SizeOfRawData: %d\n", sectionItem->header.SizeOfRawData);
-		s += QString().sprintf("PointerToRawData: %d\n", sectionItem->header.PointerToRawData);
-		s += QString().sprintf("PointerToRelocations: %d\n", sectionItem->header.PointerToRelocations);
-		s += QString().sprintf("PointerToLinenumbers: %d\n", sectionItem->header.PointerToLinenumbers);
-		s += QString().sprintf("NumberOfRelocations: %d\n", sectionItem->header.NumberOfRelocations);
-		s += QString().sprintf("NumberOfLinenumbers: %d\n", sectionItem->header.NumberOfLinenumbers);
-		s += QString().sprintf("Characteristics: 0x%08X\n", sectionItem->header.Characteristics);
-
-		sectionHeaderView->setText(s);
-		sectionRelocationsModel->setRelocation(
-					sectionItem->relocations,
-					((TreeItemFileHeader*)model->root->children[0])->header.Machine);
-
-		sectionHexView->setData(&model->file,
-								sectionItem->header.PointerToRawData,
-								sectionItem->header.SizeOfRawData);
-
-		setCurrentWidget(sectionWidget);
+		selectSectionItem(sectionItem);
 	}
 	else if(symbolTableItem != nullptr)
 	{
@@ -357,4 +365,41 @@ void MainWindow::slotTreeView_doubleClicked(const QModelIndex& index)
 void MainWindow::slotRecentFiles_fileTriggered(const QString& fileName)
 {
 	openFile(fileName);
+}
+
+void MainWindow::slotSymbolTableView_customContextMenuRequested(const QPoint& pos)
+{
+	QModelIndex index = symbolTableView->currentIndex();
+	SymbolTableItem* item = static_cast<SymbolTableItem*>(index.internalPointer());
+	if(!item)
+		return;
+
+	switch(item->entry.SectionNumber)
+	{
+		case IMAGE_SYM_UNDEFINED:
+		case IMAGE_SYM_ABSOLUTE:
+		case IMAGE_SYM_DEBUG:
+			break;
+		default:
+			{
+				QMenu menu;
+				QAction* action;
+				QAction* actionGoToSection = new QAction(tr("Go to section"));
+
+				menu.addAction(actionGoToSection);
+				action = menu.exec(QCursor::pos());
+				if(action == actionGoToSection)
+				{
+					int sectionNumber = item->entry.SectionNumber;
+					if(sectionNumber >= 0 && sectionNumber < model->sectionFolder->children.size())
+					{
+						TreeItem* sectionItem = model->sectionFolder->children[sectionNumber-1];
+
+						treeView->setCurrentIndex(model->toIndex(sectionItem));
+
+						selectSectionItem((TreeItemSection*)sectionItem);
+					}
+				}
+			}
+	}
 }

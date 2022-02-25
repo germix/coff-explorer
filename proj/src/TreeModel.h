@@ -4,6 +4,7 @@
 #include <QFile>
 
 class TreeItem;
+class TreeItemFolder;
 class QFile;
 
 class TreeModel : public QAbstractItemModel
@@ -12,6 +13,7 @@ class TreeModel : public QAbstractItemModel
 public:
 	TreeItem* root;
 	QFile file;
+	TreeItemFolder* sectionFolder;
 public:
 	explicit TreeModel(QObject* parent = nullptr);
 	~TreeModel();

@@ -16,6 +16,7 @@ class TreeModel;
 class SymbolTableModel;
 class StringTableModel;
 class RelocationsModel;
+class TreeItemSection;
 
 class RecentFilesMenu;
 
@@ -59,6 +60,7 @@ private:
 	void openFile(QString fileName);
 	void setCurrentWidget(QWidget* widget);
 	void initRecentFilesMenu(const QByteArray& state);
+	void selectSectionItem(TreeItemSection* sectionItem);
 private:
 	void changeEvent(QEvent* e);
 	void dropEvent(QDropEvent* e);
@@ -67,6 +69,7 @@ private slots:
 	void slotAction();
 	void slotTreeView_doubleClicked(const QModelIndex& index);
 	void slotRecentFiles_fileTriggered(const QString& fileName);
+	void slotSymbolTableView_customContextMenuRequested(const QPoint& pos);
 };
 
 #endif // MAINWINDOW_H
