@@ -137,6 +137,7 @@ MainWindow::~MainWindow()
 		QSettings s(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
 
 		s.setValue("Language", languages.language());
+		s.setValue("RecentFiles", recentFiles->saveState());
 		s.setValue("LastDirectory", lastDirectory);
 		s.setValue("MainGeometry", saveGeometry());
 		s.setValue("MainState", saveState());
